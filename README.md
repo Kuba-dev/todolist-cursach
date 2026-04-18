@@ -26,6 +26,23 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Env
+
+Example
+
+```.env
+  JWT_ACCESS_SECRET="your_key"
+  JWT_REFRESH_SECRET="your_key"
+  JWT_ACCESS_EXPIRES="date(example: 1d)"
+  JWT_REFRESH_EXPIRES="date(example: 7d)"
+
+  # google console
+  GOOGLE_CLIENT_ID="your_google_client_id"
+  GOOGLE_CLIENT_SECRET="your_google_client_secret"
+
+  DATABASE_URL="postgresql://admin:admin123@localhost:5430/taskdb?schema=public"
+```
+
 ## Installation
 
 ```bash
@@ -58,15 +75,16 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
-## Support
+## Data base
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+  # init prisma
+  $ npx prisma migrate dev --name init
+  $ npx prisma generate
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  # raise the database
+  $ docker compose up -d
+```
 
 ## License
 
