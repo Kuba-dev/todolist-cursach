@@ -1,0 +1,104 @@
+direction: right
+
+client: "Web / Mobile Client"
+google_oauth: "Google OAuth 2.0"
+
+env: "ENV\nJWT_ACCESS_SECRET\nJWT_REFRESH_SECRET\nGOOGLE_CLIENT_ID\nGOOGLE_CLIENT_SECRET\nDATABASE_URL"
+
+backend: {
+  label: "NestJS Backend (:3000)"
+
+  bootstrap: "main.ts\nNestFactory.create(AppModule)\ncookie-parser"
+
+  app_module: "AppModule\nConfigModule(global)\nPrismaModule\nUsersModule\nAuthModule\nTasksModule"
+
+  auth: {
+    label: "Auth Module"
+
+    auth_controller: "AuthController\n/auth/register\n/auth/login\n/auth/refresh\n/auth/logout\n/auth/google\n/auth/google/callback"
+
+    auth_service: "AuthService\nregister\ngoogleAuth\nvalidateUser\ngenerateTokens"
+
+    local_guard: "AuthGuard(local)"
+    local_strategy: "LocalStrategy"
+
+    jwt_access_guard: "AuthGuard(jwt-access)"
+    jwt_access_strategy: "JwtAccessStrategy"
+
+    jwt_refresh_guard: "AuthGuard(jwt-refresh)"
+    jwt_refresh_strategy: "JwtRefreshStrategy"
+
+    google_guard: "AuthGuard(google)"
+    google_strategy: "GoogleStrategy"
+
+    jwt_service: "JwtService"
+  }
+
+  users: {
+    label: "Users Module"
+    users_controller: "UsersController"
+    users_service: "UsersService\ncreateOne\ngetOne"
+  }
+
+  tasks: {
+    label: "Tasks Module"
+    tasks_controller: "TasksController\nGET /tasks\nPOST /tasks\nPATCH /tasks/:id\nDELETE /tasks/:id"
+    tasks_service: "TasksService\nget\ncreateOne\nupdateOne\ndeleteOne"
+  }
+
+  infra: {
+    label: "Infrastructure"
+    prisma_module: "PrismaModule"
+    prisma_service: "PrismaService"
+  }
+}
+
+database: {
+  label: "PostgreSQL (Docker)"
+
+  users_table: "users\nid\nemail\nhashed_password\ncreated_at\nupdated_at"
+
+  tasks_table: "tasks\nid\ntitle\ndescription\nstatus\nuser_id\ncreated_at\nupdated_at"
+}
+
+# connections
+
+client -> backend
+backend -> env
+backend -> app_module
+
+app_module -> auth
+app_module -> users
+app_module -> tasks
+app_module -> infra
+
+auth.auth_controller -> auth.local_guard: "login"
+auth.local_guard -> auth.local_strategy
+auth.local_strategy -> auth.auth_service
+auth.auth_service -> users.users_service
+auth.auth_service -> env
+auth.auth_service -> client
+
+auth.auth_controller -> auth.jwt_refresh_guard: "refresh"
+auth.jwt_refresh_guard -> auth.jwt_refresh_strategy
+auth.jwt_refresh_strategy -> users.users_service
+auth.jwt_refresh_strategy -> auth.auth_service
+
+auth.auth_controller -> auth.google_guard: "google"
+auth.google_guard -> auth.google_strategy
+auth.google_strategy -> google_oauth
+auth.google_strategy -> auth.auth_service
+
+tasks.tasks_controller -> auth.jwt_access_guard
+auth.jwt_access_guard -> auth.jwt_access_strategy
+auth.jwt_access_strategy -> users.users_service
+
+tasks.tasks_controller -> tasks.tasks_service
+tasks.tasks_service -> infra.prisma_service
+
+users.users_service -> infra.prisma_service
+
+infra.prisma_service -> database.users_table
+infra.prisma_service -> database.tasks_table
+
+database.users_table -> database.tasks_table: "1:N"
