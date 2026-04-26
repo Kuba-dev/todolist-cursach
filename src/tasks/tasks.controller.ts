@@ -4,6 +4,7 @@ import {
 	Post,
 	Get,
 	Patch,
+	Delete,
 	Param,
 	ParseIntPipe,
 	UseGuards
@@ -42,7 +43,7 @@ export class TasksController {
 		return await this.tasksService.updateOne(id, dto, userId)
 	}
 
-	@Patch(":id")
+	@Delete(":id")
 	async deleteOne(
 		@Param("id", ParseIntPipe) id: number,
 		@CurrentUser("id", ParseIntPipe) userId: number
