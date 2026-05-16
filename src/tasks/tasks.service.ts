@@ -49,7 +49,7 @@ export class TasksService {
 		const task = await this.prismaService.task.findUnique({ where: { id } })
 
 		if (!task) {
-			throw new NotFoundException("Could not find any task")
+			throw new NotFoundException(`Could not find any task. userId: ${userId}`)
 		}
 
 		return task

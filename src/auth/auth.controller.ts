@@ -15,6 +15,7 @@ import { Response } from "express"
 import { AuthGuard } from "@nestjs/passport"
 import { GoogleGuard } from "./guards/google.guard"
 import { Profile } from "passport-google-oauth20"
+import { ApiBody } from "@nestjs/swagger"
 
 @Controller("auth")
 export class AuthController {
@@ -26,8 +27,10 @@ export class AuthController {
 	}
 
 	@UseGuards(AuthGuard("local"))
+	@ApiBody({ type: RegisterDto })
 	@Post("login")
 	async login(
+		@Body() _dto: RegisterDto,
 		@CurrentUser("id", ParseIntPipe) userId: number,
 		@Res({ passthrough: true }) res: Response
 	) {

@@ -15,6 +15,7 @@ import { CreateTaskDto } from "./dtos/create-task.dto"
 import { UpdateTaskDto } from "./dtos/update-task.dto"
 import { JwtAccessGuard } from "src/auth/guards/jwt-access.guard"
 import { CurrentUser } from "src/utils/decorators/current-user"
+import { ApiBearerAuth } from "@nestjs/swagger"
 
 @UseGuards(JwtAccessGuard)
 @Controller("tasks")
@@ -22,11 +23,13 @@ export class TasksController {
 	constructor(private readonly tasksService: TasksService) {}
 
 	@Get()
+	@ApiBearerAuth("JWT-auth")
 	async get(@CurrentUser("id", ParseIntPipe) userId: number): Promise<Task[]> {
 		return await this.tasksService.get(userId)
 	}
 
 	@Post()
+	@ApiBearerAuth("JWT-auth")
 	async createOne(
 		@Body() dto: CreateTaskDto,
 		@CurrentUser("id", ParseIntPipe) userId: number
@@ -35,6 +38,7 @@ export class TasksController {
 	}
 
 	@Patch(":id")
+	@ApiBearerAuth("JWT-auth")
 	async updateOne(
 		@Param("id", ParseIntPipe) id: number,
 		@Body() dto: UpdateTaskDto,
@@ -44,6 +48,7 @@ export class TasksController {
 	}
 
 	@Delete(":id")
+	@ApiBearerAuth("JWT-auth")
 	async deleteOne(
 		@Param("id", ParseIntPipe) id: number,
 		@CurrentUser("id", ParseIntPipe) userId: number

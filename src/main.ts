@@ -16,9 +16,21 @@ async function bootstrap() {
 		.setDescription("TODO Swagger")
 		.setVersion("1.0")
 		.addTag("TODO")
+		.addBearerAuth(
+			{ type: "http", scheme: "bearer", bearerFormat: "JWT" },
+			"JWT-auth" // matches @ApiBearerAuth('JWT-auth') in controllers
+		)
 		.build()
-	const documentFactory = () => SwaggerModule.createDocument(app, config)
-	SwaggerModule.setup("api", app, documentFactory)
+	const document = SwaggerModule.createDocument(app, config)
+
+	// Apply global security so Swagger UI shows Authorize for Bearer token
+	document.security = [{ "JWT-auth": [] }]
+
+	SwaggerModule.setup("api", app, document, {
+		swaggerOptions: {
+			persistAuthorization: true
+		}
+	})
 
 	await app.listen(3000)
 }

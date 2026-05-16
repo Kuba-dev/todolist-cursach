@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
 import { AuthService } from "../auth.service"
 import { Profile, Strategy } from "passport-google-oauth20"
