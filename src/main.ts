@@ -9,6 +9,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	app.use(cookieParser())
+	app.enableCors();
 
 	const config = new DocumentBuilder()
 		.setTitle("API Swagger")
