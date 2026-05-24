@@ -128,3 +128,73 @@
     @apply font-sans;
     }
 }
+
+@layer utilities {
+  @keyframes dashboard-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(0, -18px, 0) scale(1.05);
+    }
+  }
+
+  @keyframes dashboard-drift {
+    0% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate3d(18px, -12px, 0) rotate(6deg);
+    }
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+  }
+
+  @keyframes dashboard-fade-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0) scale(0.985);
+      filter: blur(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes dashboard-shimmer {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .dashboard-float {
+    animation: dashboard-float 14s ease-in-out infinite;
+  }
+
+  .dashboard-float-slow {
+    animation: dashboard-float 20s ease-in-out infinite;
+  }
+
+  .dashboard-drift {
+    animation: dashboard-drift 24s ease-in-out infinite;
+  }
+
+  .dashboard-fade-up {
+    animation: dashboard-fade-up 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .dashboard-shimmer {
+    background-size: 220% 220%;
+    animation: dashboard-shimmer 10s ease infinite;
+  }
+}

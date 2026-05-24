@@ -7,15 +7,20 @@ import {
 	Delete,
 	Param,
 	ParseIntPipe,
+	Query,
 	UseGuards
 } from "@nestjs/common"
 import { TasksService } from "./tasks.service"
-import { Task } from "@prisma/client"
+import { Prisma, Task } from "@prisma/client"
 import { CreateTaskDto } from "./dtos/create-task.dto"
 import { UpdateTaskDto } from "./dtos/update-task.dto"
 import { JwtAccessGuard } from "src/auth/guards/jwt-access.guard"
 import { CurrentUser } from "src/utils/decorators/current-user"
 import { ApiBearerAuth } from "@nestjs/swagger"
+
+type TaskWithSubtasks = Prisma.TaskGetPayload<{
+	include: { subtasks: true }
+}>
 
 @UseGuards(JwtAccessGuard)
 @Controller("tasks")
@@ -24,8 +29,11 @@ export class TasksController {
 
 	@Get()
 	@ApiBearerAuth("JWT-auth")
-	async get(@CurrentUser("id", ParseIntPipe) userId: number): Promise<Task[]> {
-		return await this.tasksService.get(userId)
+	async get(
+		@CurrentUser("id", ParseIntPipe) userId: number,
+		@Query("search") search?: string
+	): Promise<TaskWithSubtasks[]> {
+		return await this.tasksService.get(userId, search)
 	}
 
 	@Post()

@@ -10,12 +10,18 @@ datasource db {
 model Task {
   id Int @id @default(autoincrement())
 
-  title String
+  title       String
   description String?
-  status TaskStatusEnum @default(new)
+  status      TaskStatusEnum   @default(new)
+  category    String?
+  tags        String[]         @default([])
+  priority    TaskPriorityEnum @default(medium)
+  deadline    DateTime?
+
+  subtasks Subtask[]
 
   userId Int
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -26,10 +32,11 @@ model Task {
 model User {
   id Int @id @default(autoincrement())
 
-  email String @unique
+  email          String  @unique
   hashedPassword String? @map("hashed_password")
-  
-  tasks Task[]
+
+  tasks    Task[]
+  subtasks Subtask[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -37,9 +44,33 @@ model User {
   @@map("users")
 }
 
+model Subtask {
+  id Int @id @default(autoincrement())
+
+  title     String
+  completed Boolean @default(false)
+
+  taskId Int
+  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("subtasks")
+}
+
 enum TaskStatusEnum {
   new
   doing
   completed
   closed
+}
+
+enum TaskPriorityEnum {
+  low
+  medium
+  high
 }
