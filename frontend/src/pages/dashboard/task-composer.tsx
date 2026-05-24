@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Sparkles, Tag } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -32,6 +32,17 @@ export function TaskComposer({ onQuickCreate, onAdvancedCreate }: TaskComposerPr
 	const [advancedTags, setAdvancedTags] = useState("")
 	const [advancedPriority, setAdvancedPriority] = useState<TaskPriority>("medium")
 	const [advancedDeadline, setAdvancedDeadline] = useState<Date | undefined>(undefined)
+
+	useEffect(() => {
+		if (!advancedCreateOpen) return
+
+		const originalStyle = window.getComputedStyle(document.body).overflow
+		document.body.style.overflow = "hidden"
+
+		return () => {
+			document.body.style.overflow = originalStyle
+		}
+	}, [advancedCreateOpen])
 
 	const submitQuick = () => {
 		if (!quickTitle.trim()) return
@@ -113,14 +124,14 @@ export function TaskComposer({ onQuickCreate, onAdvancedCreate }: TaskComposerPr
 
 			{advancedCreateOpen ? (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-					<div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={() => setAdvancedCreateOpen(false)} />
-					<div className="relative z-10 w-full max-w-4xl overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/95 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl">
+					<div className="fixed inset-0 z-0 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" onClick={() => setAdvancedCreateOpen(false)} />
+					<div className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/95 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl flex flex-col">
 						<div className="pointer-events-none absolute inset-0">
 							<div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.22),transparent_32%),radial-gradient(circle_at_90%_10%,rgba(34,211,238,0.16),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(236,72,153,0.18),transparent_30%)]" />
 							<div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:56px_56px]" />
 						</div>
 
-						<div className="relative space-y-6 p-6 md:p-8">
+						<div className="relative flex-1 overflow-y-auto space-y-6 p-6 md:p-8">
 							<div className="space-y-3">
 								<div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-white/70 backdrop-blur-xl">
 									<Sparkles size={14} />
